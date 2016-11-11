@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/ramin0/chatbot"
 
@@ -13,17 +12,19 @@ import (
 )
 
 func chatbotProcess(session chatbot.Session, message string) (string, error) {
-	if strings.EqualFold(message, "chatbot") {
-		return "", fmt.Errorf("This can't be, I'm the one and only %s!", message)
-	}
+	// if strings.EqualFold(message, "chatbot") {
+	// 	return "", fmt.Errorf("This can't be, I'm the one and only %s!", message)
+	// }
+	//
+	// return fmt.Sprintf("Hello %s, my name is chatbot. What was yours again?", message), nil
 
-	return fmt.Sprintf("Hello %s, my name is chatbot. What was yours again?", message), nil
+	return "THE ABSOLUTE POTATO", nil
 }
 
 func main() {
 	// Uncomment the following lines to customize the chatbot
-	chatbot.WelcomeMessage = "What's your name?"
-	chatbot.ProcessFunc(chatbotProcess)
+	// chatbot.WelcomeMessage = "What's your name?"
+	// chatbot.ProcessFunc(chatbotProcess)
 
 	// Use the PORT environment variable
 	port := os.Getenv("PORT")
@@ -31,7 +32,8 @@ func main() {
 	if port == "" {
 		port = "3000"
 	}
-
+	// http.HandleFunc("/test", sendAPIRequest)
+	// http.ListenAndServe(":3000", nil)
 	// Start the server
 	fmt.Printf("Listening on port %s...\n", port)
 	log.Fatalln(chatbot.Engage(":" + port))
