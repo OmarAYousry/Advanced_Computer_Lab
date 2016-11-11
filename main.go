@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/ramin0/chatbot"
 
@@ -12,13 +13,13 @@ import (
 )
 
 func chatbotProcess(session chatbot.Session, message string) (string, error) {
-	// if strings.EqualFold(message, "chatbot") {
-	// 	return "", fmt.Errorf("This can't be, I'm the one and only %s!", message)
-	// }
-	//
-	// return fmt.Sprintf("Hello %s, my name is chatbot. What was yours again?", message), nil
+	if strings.EqualFold(message, "chatbot") {
+		return "", fmt.Errorf("This can't be, I'm the one and only %s!", message)
+	}
 
-	return "THE ABSOLUTE POTATO", nil
+	return fmt.Sprintf("Hello %s, my name is chatbot. What was yours again?", message), nil
+
+	// return "THE ABSOLUTE POTATO", nil
 }
 
 func main() {
