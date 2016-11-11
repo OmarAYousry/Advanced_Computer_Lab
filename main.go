@@ -25,6 +25,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 func main() {
 	// Uncomment the following lines to customize the chatbot
 	// chatbot.WelcomeMessage = "What's your name?"
+	//potato
 	chatbot.ProcessFunc(chatbotProcess)
 
 	// Use the PORT environment variable
