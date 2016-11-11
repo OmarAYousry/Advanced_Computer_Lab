@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 
 	// "github.com/ramin0/chatbot"
@@ -18,14 +20,22 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 	// }
 	//
 	// return fmt.Sprintf("Hello %s, my name is chatbot. What was yours again?", message), nil
+	resp, _ := http.Get(nutritionix + "taco?appId=" + appId + "&appKey=" + appKey)
 
-	return "THE ABSOLUTE POTATO", nil
+	body, _ := ioutil.ReadAll(resp.Body)
+
+	var s string
+	for someVar := range body {
+		s += string(someVar)
+	}
+	return s, nil
+	// return resp.H, nil
+	// return "THE ABSOLUTE POTATO", nil
 }
 
 func main() {
 	// Uncomment the following lines to customize the chatbot
-	// chatbot.WelcomeMessage = "What's your name?"
-	//potato
+	chatbot.WelcomeMessage = "Hey! What's your name?"
 	chatbot.ProcessFunc(chatbotProcess)
 
 	// Use the PORT environment variable
