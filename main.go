@@ -17,9 +17,9 @@ import (
 func getJSON(res *http.Response) map[string]interface{} {
 	defer res.Body.Close()
 
-	data := JSON{}
+	var data map[string]interface{}
 	json.NewDecoder(res.Body).Decode(&data)
-	nestedData := data["results"].(map[string]interface{})
+	nestedData := (data["results"].([]interface{}))[0].(map[string]interface{})
 	return nestedData
 }
 
