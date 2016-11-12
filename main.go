@@ -19,7 +19,13 @@ func getJSONArray(res *http.Response, arrayString string) []map[string]interface
 
 	var data map[string]interface{}
 	json.NewDecoder(res.Body).Decode(&data)
-	nestedData := data[arrayString].([]map[string]interface{})
+	referArray := data[arrayString].([]interface{})
+	// var nestedData [len(referArray)]map[string]interface{}
+	nestedData := make([]map[string]interface{}, len(referArray))
+	for index, dataEntry := range referArray {
+		nestedData[index] = dataEntry.(map[string]interface{})
+	}
+	// nestedData := data["results"].([]map[string]interface{})
 	return nestedData
 }
 
