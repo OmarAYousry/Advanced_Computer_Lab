@@ -14,12 +14,12 @@ import (
 	"github.com/ramin0/chatbot"
 )
 
-func getJSON(res *http.Response) map[string]interface{} {
+func getJSONArray(res *http.Response) []map[string]interface{} {
 	defer res.Body.Close()
 
 	var data map[string]interface{}
 	json.NewDecoder(res.Body).Decode(&data)
-	nestedData := (data["results"].([]interface{}))[0].(map[string]interface{})
+	nestedData := data["results"].([]map[string]interface{})
 	return nestedData
 }
 
