@@ -33,14 +33,14 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 	res, _ := http.Get("http://www.recipepuppy.com/api/?i=onions,garlic&q=omelet&p=3")
 	defer res.Body.Close()
 	// body, _ := ioutil.ReadAll(resp.Body)
-	data := getJSON(res)
+	data := getJSONArray(res)
 	// var s string
 	// for someVar := range body {
 	// s += string(someVar)
 	// }
 	// return s, nil
 	// return resp.H, nil
-	return data["title"].(string), nil
+	return data[0]["title"].(string), nil
 }
 
 func main() {
