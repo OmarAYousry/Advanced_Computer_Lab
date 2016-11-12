@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	// "github.com/ramin0/chatbot"
 
@@ -29,17 +30,32 @@ func getJSONArray(res *http.Response, arrayString string) []map[string]interface
 	return nestedData
 }
 
+func getResponse(baseUrl string, params map[string]string, questionString string) (res *http.Response) {
+	var searchString string
+	for key, value := range params {
+		searchString += key + "=" + value + "&"
+	}
+	res, err := http.Get(baseUrl + "/" + questionString + "?" + searchString)
+	if err != nil {
+		panic("SOMETHING HAS GONE TERRIBLE WRONG")
+	}
+	return res
+}
+
 func chatbotProcess(session chatbot.Session, message string) (string, error) {
-	// if strings.EqualFold(message, "chatbot") {
-	// 	return "", fmt.Errorf("This can't be, I'm the one and only %s!", message)
-	// }
+
+	if strings.EqualFold(message, "chatbot") {
+		return "", fmt.Errorf("This can't be, I'm the one and only %s!", message)
+	}
 	//
+	data := getJSONArray(getResponse("www.recipepuppy.com/api", map[string]string{"i": "garlic"}, ""), "results")
+
 	// return fmt.Sprintf("Hello %s, my name is chatbot. What was yours again?", message), nil
 	// resp, _ := http.Get(nutritionix + "taco?appId=" + appId + "&appKey=" + appKey)
-	res, _ := http.Get("http://www.recipepuppy.com/api/?i=onions,garlic&q=omelet&p=3")
-	defer res.Body.Close()
+	//	res, _ := http.Get("http://www.recipepuppy.com/api/?i=onions,garlic&q=omelet&p=3")
+	//	defer res.Body.Close()
 	// body, _ := ioutil.ReadAll(resp.Body)
-	data := getJSONArray(res, "results")
+	//	data := getJSONArray(res, "results")
 	// var s string
 	// for someVar := range body {
 	// s += string(someVar)
