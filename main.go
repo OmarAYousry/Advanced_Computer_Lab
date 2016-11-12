@@ -1,8 +1,8 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -14,23 +14,32 @@ import (
 	"github.com/ramin0/chatbot"
 )
 
+func getJSON(res *http.Response) map[string]interface{} {
+	defer res.Body.Close()
+
+	data := JSON{}
+	json.NewDecoder(res.Body).Decode(&data)
+	return data
+}
+
 func chatbotProcess(session chatbot.Session, message string) (string, error) {
 	// if strings.EqualFold(message, "chatbot") {
 	// 	return "", fmt.Errorf("This can't be, I'm the one and only %s!", message)
 	// }
 	//
 	// return fmt.Sprintf("Hello %s, my name is chatbot. What was yours again?", message), nil
-	resp, _ := http.Get(nutritionix + "taco?appId=" + appId + "&appKey=" + appKey)
-
-	body, _ := ioutil.ReadAll(resp.Body)
-
-	var s string
-	for someVar := range body {
-		s += string(someVar)
-	}
-	return s, nil
+	// resp, _ := http.Get(nutritionix + "taco?appId=" + appId + "&appKey=" + appKey)
+	res, _ := http.Get("http://www.recipepuppy.com/api/?i=onions,garlic&q=omelet&p=3")
+	defer res.Body.Close()
+	// body, _ := ioutil.ReadAll(resp.Body)
+	data := getJSON(res)
+	// var s string
+	// for someVar := range body {
+	// s += string(someVar)
+	// }
+	// return s, nil
 	// return resp.H, nil
-	// return "THE ABSOLUTE POTATO", nil
+	return data["title"].(string), nil
 }
 
 func main() {
