@@ -14,12 +14,12 @@ import (
 	"github.com/ramin0/chatbot"
 )
 
-func getJSONArray(res *http.Response) []map[string]interface{} {
+func getJSONArray(res *http.Response, arrayString string) []map[string]interface{} {
 	defer res.Body.Close()
 
 	var data map[string]interface{}
 	json.NewDecoder(res.Body).Decode(&data)
-	nestedData := data["results"].([]map[string]interface{})
+	nestedData := data[arrayString].([]map[string]interface{})
 	return nestedData
 }
 
@@ -33,7 +33,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 	res, _ := http.Get("http://www.recipepuppy.com/api/?i=onions,garlic&q=omelet&p=3")
 	defer res.Body.Close()
 	// body, _ := ioutil.ReadAll(resp.Body)
-	data := getJSONArray(res)
+	data := getJSONArray(res, "title")
 	// var s string
 	// for someVar := range body {
 	// s += string(someVar)
