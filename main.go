@@ -26,6 +26,7 @@ func getJSONArray(res *http.Response, arrayString string) []map[string]interface
 	for index, dataEntry := range referArray {
 		nestedData[index] = dataEntry.(map[string]interface{})
 	}
+	// st :
 	// nestedData := data["results"].([]map[string]interface{})
 	return nestedData
 }
@@ -62,12 +63,16 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 	// }
 	// return s, nil
 	// return resp.H, nil
+
 	return data[0]["title"].(string), nil
 }
 
 func main() {
 	// Uncomment the following lines to customize the chatbot
-	chatbot.WelcomeMessage = "Hey! What's your name?"
+	chatbot.WelcomeMessage = `Hello. I am the GUC Sofra AI.
+  I will help you in determining the best
+  recipes based on the nutritional values you want
+  by asking you a series of questions.`
 	chatbot.ProcessFunc(chatbotProcess)
 
 	// Use the PORT environment variable
