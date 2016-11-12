@@ -33,7 +33,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 	res, _ := http.Get("http://www.recipepuppy.com/api/?i=onions,garlic&q=omelet&p=3")
 	defer res.Body.Close()
 	// body, _ := ioutil.ReadAll(resp.Body)
-	data := getJSONArray(res, "title")
+	data := getJSONArray(res, "results")
 	// var s string
 	// for someVar := range body {
 	// s += string(someVar)
