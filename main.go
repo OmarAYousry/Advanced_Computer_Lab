@@ -19,7 +19,8 @@ func getJSON(res *http.Response) map[string]interface{} {
 
 	data := JSON{}
 	json.NewDecoder(res.Body).Decode(&data)
-	return data
+	nestedData := data["results"].(map[string]interface{})
+	return nestedData
 }
 
 func chatbotProcess(session chatbot.Session, message string) (string, error) {
