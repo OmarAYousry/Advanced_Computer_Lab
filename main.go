@@ -13,7 +13,7 @@ import (
 
 	// Autoload environment variables in .env
 	_ "github.com/joho/godotenv/autoload"
-	"github.com/ramin0/chatbot"
+	"github.com/omarayousry/chatbot"
 )
 
 func getJSONArray(res *http.Response, arrayString string) []map[string]interface{} {
