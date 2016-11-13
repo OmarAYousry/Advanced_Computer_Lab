@@ -53,7 +53,7 @@ func getResponse(baseUrl string, params []string, questionString string) *http.R
 
 func chatbotProcess(session chatbot.Session, message string) (string, error) {
 
-	var returnMsg string = "You want "
+	var returnMsg string
 
 	//checks for invalid characters in the user's message
 	if strings.ContainsAny(message,
@@ -65,14 +65,16 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		session["name"] = strings.Split(message, " ")
 		session["phase"] = []string{"Number"}
 		session["history"] = []string{}
-		return "Okay, " + session["name"][0] + ". How many items would you like to specify for your dish?", nil
+		return "Okay, " + session["name"][0] + ". How many ingredients would you like to specify for your dish?", nil
 	} else if session["phase"][0] == "Number" {
 		if len(message) > 1 || !(strings.ContainsAny(message, "123456789")) {
 			return "Please choose a number (digit) between 1 and 9 only.", nil
 		}
 		session["phase"][0] = "Querying"
 		session["number"] = []string{message}
+		returnMsg = "Okay. What is the first ingredient you want?"
 	} else if session["phase"][0] == "Querying" {
+		returnMsg = "You want "
 		numItems, _ := strconv.Atoi(session["number"][0])
 		numItems -= 1
 		session["number"][0] = strconv.Itoa(numItems)
