@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"reflect"
 	"strings"
 
 	// "github.com/ramin0/chatbot"
@@ -45,8 +46,16 @@ func getResponse(baseUrl string, params map[string]string, questionString string
 
 func chatbotProcess(session chatbot.Session, message string) (string, error) {
 
+	//checks for invalid characters in the user's message
+	if strings.ContainsAny(message,
+		`123456789,.;()!@#$%^&*[]{}\\|:?><`) {
+		return "", fmt.Errorf("Whoops! Please only enter valid answers to the question! No symbols or numbers!")
+	}
 	if strings.EqualFold(message, "chatbot") {
 		return "", fmt.Errorf("This can't be, I'm the one and only %s!", message)
+	}
+	if reflect.DeepEqual(session["toot"], []string{"THE EPIC MAN"}) {
+		fmt.Println("EYYY")
 	}
 	//
 	data := getJSONArray(getResponse("www.recipepuppy.com/api", map[string]string{"i": "garlic"}, ""), "results")
@@ -69,7 +78,10 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 
 func main() {
 	// Uncomment the following lines to customize the chatbot
-	chatbot.WelcomeMessage = "Hello :)"
+	chatbot.WelcomeMessage = `Hello. I am the GUC Sofra AI.
+  I will help you in determining the best
+  recipes based on the nutritional values you want
+  by asking you a series of questions.`
 	chatbot.ProcessFunc(chatbotProcess)
 
 	// Use the PORT environment variable
