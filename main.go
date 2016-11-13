@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"reflect"
+	"strconv"
 	"strings"
 
 	// "github.com/ramin0/chatbot"
@@ -15,6 +15,12 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/omarayousry/chatbot"
 )
+
+var data []map[string]interface{}
+
+func getDetailsForRecipe(rawRecipe map[string]interface{}) string {
+	return rawRecipe["title"].(string)
+}
 
 func getJSONArray(res *http.Response, arrayString string) []map[string]interface{} {
 	defer res.Body.Close()
@@ -46,43 +52,105 @@ func getResponse(baseUrl string, params map[string]string, questionString string
 
 func chatbotProcess(session chatbot.Session, message string) (string, error) {
 
+	var returnMsg string = "You want "
+
 	//checks for invalid characters in the user's message
 	if strings.ContainsAny(message,
-		`123456789,.;()!@#$%^&*[]{}\\|:?><`) {
+		`,.;()!@#$%^&*[]{}\\|:?><`) {
 		return "", fmt.Errorf("Whoops! Please only enter valid answers to the question! No symbols or numbers!")
 	}
 
 	if session["phase"] == nil {
 		session["name"] = strings.Split(message, " ")
-		session["phase"] = []string{"Querying"}
+		session["phase"] = []string{"Number"}
 		session["history"] = []string{}
-		return "Okay, " + session["name"][0] + ". What is an item you would like to have in your dish?", nil
+		return "Okay, " + session["name"][0] + ". How many items would you like to specify for your dish?", nil
+	} else if session["phase"][0] == "Number" {
+		if len(message) > 1 || !(strings.ContainsAny(message, "123456789")) {
+			return "Please choose a number (digit) between 1 and 9 only.", nil
+		}
+		session["phase"][0] = "Querying"
+		session["number"] = []string{message}
 	} else if session["phase"][0] == "Querying" {
+		numItems, _ := strconv.Atoi(session["number"][0])
+		numItems -= 1
+		session["number"][0] = strconv.Itoa(numItems)
 		session["history"] = append(session["history"], message)
-		var returnMsg string = "You want "
 		for index, item := range session["history"] {
 			if index != len(session["history"])-1 {
 				returnMsg += item
 				returnMsg += ", "
 			} else {
-				returnMsg += "and " + item
+				if len(session["history"]) != 1 {
+					returnMsg += "and "
+				}
+				returnMsg += item
 				returnMsg += "."
 			}
 		}
-		returnMsg += " What else?"
+		if numItems != 0 {
+			returnMsg += " What else?"
+		} else {
+			session["phase"][0] = "APIing"
+			returnMsg += " I will now show you the details of the first recipe I found....\n\n"
+		}
+	}
+	if session["phase"][0] == "APIing" {
+		data = getJSONArray(getResponse("http://www.recipepuppy.com/api", map[string]string{"i": "garlic"}, ""), "results")
+		if len(data) == 0 {
+			returnMsg += "Whoops! I don't seem to have found any recipe matching your entered items. \n Would you like to start over?"
+			session["phase"][0] = "Ending"
+			session["phase"] = append(session["phase"], "Failure")
+			return returnMsg, nil
+		} else {
+			session["phase"][0] = "Ending"
+			session["phase"] = append(session["phase"], "Success")
+			returnMsg += getDetailsForRecipe(data[0])
+			session["results"] = []string{strconv.Itoa(len(data)), "1"}
+		}
+
 		return returnMsg, nil
 	}
-
-	if strings.EqualFold(message, "chatbot") {
-		return "", fmt.Errorf("This can't be, I'm the one and only %s!", message)
+	if session["phase"][0] == "Ending" {
+		if session["phase"][1] == "Failure" || session["phase"][1] == "Complete" {
+			if strings.EqualFold(message, "yes") || strings.EqualFold(message, "restart") || strings.EqualFold(message, "retry") {
+				session["phase"] = nil
+				return "Restarting...\n\n\n", nil
+			} else if strings.EqualFold(message, "no") || strings.EqualFold(message, "bye") || strings.EqualFold(message, "goodbye") {
+				session["phase"][0] = "Shutdown"
+				return "Understood, thank you for using this service. Have a lovely day!", nil
+			} else {
+				return "I'm sorry, I didn't quite catch that. Please say yes or restart if you want to restart, or no otherwise", nil
+			}
+		}
+		if strings.EqualFold(message, "more") || strings.EqualFold(message, "next") {
+			numResults, _ := strconv.Atoi(session["results"][0])
+			currentItem, _ := strconv.Atoi(session["results"][1])
+			if numResults == currentItem {
+				session["phase"][1] = "Complete"
+				return "I've already listed everything. Thanks!", nil
+			} else {
+				getDetailsForRecipe(data[currentItem])
+				currentItem += 1
+				session["results"][1] = strconv.Itoa(currentItem)
+			}
+		} else {
+			session["phase"][0] = "Shutdown"
+			return "I take it that will be all. Goodbye!", nil
+		}
 	}
-	if reflect.DeepEqual(session["toot"], []string{"THE EPIC MAN"}) {
-		fmt.Println("EYYY")
+	if session["phase"][0] == "Shutdown" {
+		return "", fmt.Errorf("THE CHAT HAS ALREADY BEEN TERMINATED")
 	}
+	// if strings.EqualFold(message, "chatbot") {
+	// 	return "", fmt.Errorf("This can't be, I'm the one and only %s!", message)
+	// }
+	// if reflect.DeepEqual(session["toot"], []string{"THE EPIC MAN"}) {
+	// 	fmt.Println("EYYY")
+	// }
 	//
 	// _, err := getResponse("www.recipepuppy.com/api", map[string]string{"i": "garlic"}, "")
 	// return err.Error(), nil
-	data := getJSONArray(getResponse("http://www.recipepuppy.com/api", map[string]string{"i": "garlic"}, ""), "results")
 
 	// return fmt.Sprintf("Hello %s, my name is chatbot. What was yours again?", message), nil
 	// resp, _ := http.Get(nutritionix + "taco?appId=" + appId + "&appKey=" + appKey)
@@ -97,7 +165,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 	// return s, nil
 	// return resp.H, nil
 
-	return data[0]["title"].(string), nil
+	return returnMsg, nil
 }
 
 func main() {
