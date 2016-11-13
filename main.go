@@ -38,12 +38,13 @@ func getJSONArray(res *http.Response, arrayString string) []map[string]interface
 	return nestedData
 }
 
-func getResponse(baseUrl string, params map[string]string, questionString string) *http.Response {
+func getResponse(baseUrl string, params []string, questionString string) *http.Response {
 	var searchString string
-	for key, value := range params {
-		searchString += key + "=" + value + "&"
-	}
-	res, err := http.Get(baseUrl + "/" + questionString + "?" + searchString)
+	searchString = strings.Join(params, ",")
+	// for key, value := range params {
+	// 	searchString += key + "=" + value + "&"
+	// }
+	res, err := http.Get(baseUrl + "/" + questionString + "?i=" + searchString)
 	if err != nil {
 		panic("Couldn't establish a connection!")
 	}
@@ -96,7 +97,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		}
 	}
 	if session["phase"][0] == "APIing" {
-		data = getJSONArray(getResponse("http://www.recipepuppy.com/api", map[string]string{"i": "garlic"}, ""), "results")
+		data = getJSONArray(getResponse("http://www.recipepuppy.com/api", session["history"], ""), "results")
 		if len(data) == 0 {
 			returnMsg += "Whoops! I don't seem to have found any recipe matching your entered items. \n Would you like to start over?"
 			session["phase"][0] = "Ending"
