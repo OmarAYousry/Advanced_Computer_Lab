@@ -58,12 +58,14 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		session["history"] = []string{}
 		return "Okay, " + session["name"][0] + ". What is an item you would like to have in your dish?", nil
 	} else if session["phase"][0] == "Querying" {
+		session["history"] = append(session["history"], message)
 		var returnMsg string = "You want "
 		for index, item := range session["history"] {
-			returnMsg += item
 			if index != len(session["history"])-1 {
+				returnMsg += item
 				returnMsg += ", "
 			} else {
+				returnMsg += "and " + item
 				returnMsg += "."
 			}
 		}
