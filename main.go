@@ -60,7 +60,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 	//
 	// _, err := getResponse("www.recipepuppy.com/api", map[string]string{"i": "garlic"}, "")
 	// return err.Error(), nil
-	data := getJSONArray(getResponse("www.recipepuppy.com/api", map[string]string{"i": "garlic"}, ""), "results")
+	data := getJSONArray(getResponse("http://www.recipepuppy.com/api", map[string]string{"i": "garlic"}, ""), "results")
 
 	// return fmt.Sprintf("Hello %s, my name is chatbot. What was yours again?", message), nil
 	// resp, _ := http.Get(nutritionix + "taco?appId=" + appId + "&appKey=" + appKey)
