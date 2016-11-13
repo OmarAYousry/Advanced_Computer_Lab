@@ -39,7 +39,7 @@ func getResponse(baseUrl string, params map[string]string, questionString string
 	}
 	res, err := http.Get(baseUrl + "/" + questionString + "?" + searchString)
 	if err != nil {
-		return res, fmt.Errorf("THERE WAS A PROBLEM ESTABLISHING CONNECTING USING " + baseUrl + "/" + questionString + "?" + searchString)
+		return res, fmt.Errorf("THERE WAS A PROBLEM ESTABLISHING CONNECTING USING " + baseUrl + "/" + questionString + "?" + searchString + "The error is" + err.Error())
 	}
 	return res, nil
 }
