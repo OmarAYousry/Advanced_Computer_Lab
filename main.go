@@ -130,9 +130,9 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 				session["phase"][1] = "Complete"
 				return "I've already listed everything. Thanks!", nil
 			} else {
-				getDetailsForRecipe(data[currentItem])
 				currentItem += 1
 				session["results"][1] = strconv.Itoa(currentItem)
+				return getDetailsForRecipe(data[currentItem]), nil
 			}
 		} else {
 			session["phase"][0] = "Shutdown"
