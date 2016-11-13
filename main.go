@@ -32,16 +32,16 @@ func getJSONArray(res *http.Response, arrayString string) []map[string]interface
 	return nestedData
 }
 
-func getResponse(baseUrl string, params map[string]string, questionString string) (res *http.Response) {
+func getResponse(baseUrl string, params map[string]string, questionString string) (*http.Response, error) {
 	var searchString string
 	for key, value := range params {
 		searchString += key + "=" + value + "&"
 	}
 	res, err := http.Get(baseUrl + "/" + questionString + "?" + searchString)
 	if err != nil {
-		panic("SOMETHING HAS GONE TERRIBLE WRONG")
+		return res, fmt.Errorf("THERE WAS A PROBLEM ESTABLISHING CONNECTING USING " + baseUrl + "/" + questionString + "?" + searchString)
 	}
-	return res
+	return res, nil
 }
 
 func chatbotProcess(session chatbot.Session, message string) (string, error) {
@@ -58,7 +58,9 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		fmt.Println("EYYY")
 	}
 	//
-	data := getJSONArray(getResponse("www.recipepuppy.com/api", map[string]string{"i": "garlic"}, ""), "results")
+	_, err := getResponse("www.recipepuppy.com/api", map[string]string{"i": "garlic"}, "")
+	return err.Error(), nil
+	//data := getJSONArray(getResponse("www.recipepuppy.com/api", map[string]string{"i": "garlic"}, ""), "results")
 
 	// return fmt.Sprintf("Hello %s, my name is chatbot. What was yours again?", message), nil
 	// resp, _ := http.Get(nutritionix + "taco?appId=" + appId + "&appKey=" + appKey)
@@ -73,7 +75,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 	// return s, nil
 	// return resp.H, nil
 
-	return data[0]["title"].(string), nil
+	// return data[0]["title"].(string), nil
 }
 
 func main() {
