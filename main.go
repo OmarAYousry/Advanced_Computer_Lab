@@ -32,7 +32,7 @@ func getJSONArray(res *http.Response, arrayString string) []map[string]interface
 	return nestedData
 }
 
-func getResponse(baseUrl string, params map[string]string, questionString string) (*http.Response, error) {
+func getResponse(baseUrl string, params map[string]string, questionString string) *http.Response {
 	var searchString string
 	for key, value := range params {
 		searchString += key + "=" + value + "&"
@@ -41,7 +41,7 @@ func getResponse(baseUrl string, params map[string]string, questionString string
 	// if err != nil {
 	// 	return res, fmt.Errorf("THERE WAS A PROBLEM ESTABLISHING CONNECTING USING " + baseUrl + "/" + questionString + "?" + searchString + "The error is" + err.Error())
 	// }
-	return res, nil
+	return res
 }
 
 func chatbotProcess(session chatbot.Session, message string) (string, error) {
@@ -58,13 +58,13 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		fmt.Println("EYYY")
 	}
 	//
-	_, err := getResponse("www.recipepuppy.com/api", map[string]string{"i": "garlic"}, "")
-	return err.Error(), nil
-	//data := getJSONArray(getResponse("www.recipepuppy.com/api", map[string]string{"i": "garlic"}, ""), "results")
+	// _, err := getResponse("www.recipepuppy.com/api", map[string]string{"i": "garlic"}, "")
+	// return err.Error(), nil
+	data := getJSONArray(getResponse("www.recipepuppy.com/api", map[string]string{"i": "garlic"}, ""), "results")
 
 	// return fmt.Sprintf("Hello %s, my name is chatbot. What was yours again?", message), nil
 	// resp, _ := http.Get(nutritionix + "taco?appId=" + appId + "&appKey=" + appKey)
-	//	res, _ := http.Get("http://www.recipepuppy.com/api/?i=onions,garlic&q=omelet&p=3")
+	// res, _ := http.Get("http://www.recipepuppy.com/api/?i=onions,garlic&q=omelet&p=3")
 	//	defer res.Body.Close()
 	// body, _ := ioutil.ReadAll(resp.Body)
 	//	data := getJSONArray(res, "results")
@@ -75,7 +75,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 	// return s, nil
 	// return resp.H, nil
 
-	// return data[0]["title"].(string), nil
+	return data[0]["title"].(string), nil
 }
 
 func main() {
