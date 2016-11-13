@@ -55,9 +55,20 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 	if session["phase"] == nil {
 		session["name"] = strings.Split(message, " ")
 		session["phase"] = []string{"Querying"}
+		session["history"] = []string{}
 		return "Okay, " + session["name"][0] + ". What is an item you would like to have in your dish?", nil
 	} else if session["phase"][0] == "Querying" {
-		return "You want " + message + ". And what else?", nil
+		var returnMsg string = "You want "
+		for index, item := range session["history"] {
+			returnMsg += item
+			if index != len(session["history"])-1 {
+				returnMsg += ", "
+			} else {
+				returnMsg += "."
+			}
+		}
+		returnMsg += " What else?"
+		return returnMsg, nil
 	}
 
 	if strings.EqualFold(message, "chatbot") {
