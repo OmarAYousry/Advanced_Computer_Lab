@@ -51,6 +51,15 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		`123456789,.;()!@#$%^&*[]{}\\|:?><`) {
 		return "", fmt.Errorf("Whoops! Please only enter valid answers to the question! No symbols or numbers!")
 	}
+
+	if session["phase"] == nil {
+		session["name"] = strings.Split(message, " ")
+		session["phase"] = []string{"Querying"}
+		return "Okay, " + session["name"][0] + ". What is an item you would like to have in your dish?", nil
+	} else if session["phase"][0] == "Querying" {
+		return "You want " + message + ". And what else?", nil
+	}
+
 	if strings.EqualFold(message, "chatbot") {
 		return "", fmt.Errorf("This can't be, I'm the one and only %s!", message)
 	}
@@ -83,7 +92,8 @@ func main() {
 	chatbot.WelcomeMessage = `Hello. I am the GUC Sofra AI.
   I will help you in determining the best
   recipes based on the nutritional values you want
-  by asking you a series of questions.`
+  by asking you a series of questions.
+	First off, could you tell me what your name is please?`
 	chatbot.ProcessFunc(chatbotProcess)
 
 	// Use the PORT environment variable
