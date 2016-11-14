@@ -16,6 +16,7 @@ import (
 	"github.com/ramin0/chatbot"
 )
 
+var lastNumOfItems int = 0
 var data []map[string]interface{}
 
 func getDetailsForRecipe(rawRecipe map[string]interface{}) string {
@@ -57,7 +58,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 
 	//checks for invalid characters in the user's message
 	if strings.ContainsAny(message,
-		`;()!@#$%^&*[]{}\\|:?><`) {
+		`;()!@#$%^*[]{}\\|:?><`) {
 		return "", fmt.Errorf("Whoops! Please only enter valid answers to the question! No symbols or numbers!")
 	}
 
@@ -75,23 +76,26 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		// returnMsg = "Okay. What is the first ingredient you want?"
 		return "Okay, " + session["name"][0] +
 			". Please enter the ingredients you want to specify seperated by commas or spaces", nil
-	} else if session["phase"][0] == "Querying" && (strings.EqualFold(message, "No") || strings.EqualFold(message, "Yes")) {
-		if session["history"] == nil {
-			return "", fmt.Errorf("Whoops! You need to enter items first!")
-		} else if strings.EqualFold(message, "Yes") {
+	} else if session["phase"][0] == "Querying" && lastNumOfItems != len(session["history"]) {
+		if strings.EqualFold(message, "Yes") && strings.EqualFold(message, "Y") && strings.EqualFold(message, "Yeah") {
+			lastNumOfItems = len(session["history"])
 			return "Okay, " + session["name"][0] + ". What would you like to add?", nil
-		} else {
-			// the answer is no
+		} else if strings.EqualFold(message, "No") && strings.EqualFold(message, "N") && strings.EqualFold(message, "Nope") {
+			lastNumOfItems = len(session["history"])
 			session["phase"][0] = "APIing"
+		} else {
+			return "", fmt.Errorf("Don't think I quite got that. Please only enter yes or no.")
 		}
 	} else if session["phase"][0] == "Querying" {
 		var items []string
 		// just in case the user entered decided to enter a period somewhere or something
 		strings.Trim(message, ".")
+		strings.Trim(message, "and")
 		if strings.Contains(message, ",") && strings.Contains(message, " ") {
 			// assuming user enters something like "Pasta, onions, caramel"
 			strings.TrimSpace(message)
-		} else if strings.Contains(message, ",") {
+		}
+		if strings.Contains(message, ",") {
 			items = strings.Split(message, ",")
 		} else {
 			// default case, can also handle space separation
@@ -127,7 +131,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		// }
 	}
 	if session["phase"][0] == "APIing" {
-		data = getJSONArray(getResponse("https://www.recipepuppy.com/api", session["history"], ""), "results")
+		data = getJSONArray(getResponse("http://www.recipepuppy.com/api", session["history"], ""), "results")
 		if len(data) == 0 {
 			returnMsg += "Whoops! I don't seem to have found any recipe matching your entered items. \n Would you like to start over?"
 			session["phase"][0] = "Ending"
