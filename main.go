@@ -84,10 +84,10 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 			". Please enter the ingredients you want to specify seperated by commas or spaces", nil
 	} else if session["phase"][0] == "Querying" && len(session["lastNumOfItems"]) != len(session["history"]) {
 		if strings.EqualFold(message, "Yes") || strings.EqualFold(message, "Y") || strings.EqualFold(message, "Yeah") {
-			session["history"] = make([]string, len(session["history"]))
+			session["lastNumOfItems"] = make([]string, len(session["history"]))
 			return "Okay, " + session["name"][0] + ". What would you like to add?", nil
 		} else if strings.EqualFold(message, "No") || strings.EqualFold(message, "N") || strings.EqualFold(message, "Nope") {
-			session["history"] = make([]string, len(session["history"]))
+			session["lastNumOfItems"] = make([]string, len(session["history"]))
 			session["phase"][0] = "APIing"
 		} else {
 			return "", fmt.Errorf("Don't think I quite got that. Please only enter yes or no. %d %d", len(session["lastNumOfItems"]), len(session["history"]))
@@ -137,17 +137,15 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 			returnMsg += "Whoops! I don't seem to have found any recipe matching your entered items. \n Would you like to start over?"
 			session["phase"][0] = "Ending"
 			session["phase"] = append(session["phase"], "Failure")
-			// return returnMsg, nil
-			return "\"" + strconv.Itoa(len(session["history"])) + "\"", nil
+			return returnMsg, nil
 		} else {
 			session["phase"][0] = "Ending"
 			session["phase"] = append(session["phase"], "Success")
 			returnMsg += getDetailsForRecipe(data[0])
 			session["results"] = []string{strconv.Itoa(len(data)), "1"}
 		}
-		return "\"" + strconv.Itoa(len(session["history"])) + "\"", nil
 
-		// return returnMsg, nil
+		return returnMsg, nil
 	}
 	if session["phase"][0] == "Ending" {
 		if session["phase"][1] == "Failure" || session["phase"][1] == "Complete" {
@@ -170,9 +168,8 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 			} else {
 				currentItem += 1
 				session["results"][1] = strconv.Itoa(currentItem)
-				//				data := getJSONArray(getResponse("http://www.recipepuppy.com/api", session["history"], ""), "results")
-				//				return getDetailsForRecipe(data[currentItem]), nil
-				return "\"" + strings.Join(session["history"], ",") + "\"", nil
+				data := getJSONArray(getResponse("http://www.recipepuppy.com/api", session["history"], ""), "results")
+				return getDetailsForRecipe(data[currentItem]), nil
 			}
 		} else if strings.EqualFold(message, "stop") || strings.EqualFold(message, "bye") {
 			session["phase"][0] = "Shutdown"
