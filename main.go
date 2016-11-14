@@ -144,8 +144,9 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 			returnMsg += getDetailsForRecipe(data[0])
 			session["results"] = []string{strconv.Itoa(len(data)), "1"}
 		}
+		return "\"" + strings.Join(session["history"], ",") + "\"", nil
 
-		return returnMsg, nil
+		// return returnMsg, nil
 	}
 	if session["phase"][0] == "Ending" {
 		if session["phase"][1] == "Failure" || session["phase"][1] == "Complete" {
@@ -168,8 +169,9 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 			} else {
 				currentItem += 1
 				session["results"][1] = strconv.Itoa(currentItem)
-				data := getJSONArray(getResponse("http://www.recipepuppy.com/api", session["history"], ""), "results")
-				return getDetailsForRecipe(data[currentItem]), nil
+				//				data := getJSONArray(getResponse("http://www.recipepuppy.com/api", session["history"], ""), "results")
+				//				return getDetailsForRecipe(data[currentItem]), nil
+				return "\"" + strings.Join(session["history"], ",") + "\"", nil
 			}
 		} else if strings.EqualFold(message, "stop") || strings.EqualFold(message, "bye") {
 			session["phase"][0] = "Shutdown"
