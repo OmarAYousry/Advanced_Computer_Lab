@@ -20,7 +20,9 @@ var lastNumOfItems int = 0
 var data []map[string]interface{}
 
 func getDetailsForRecipe(rawRecipe map[string]interface{}) string {
-	return rawRecipe["title"].(string)
+	return fmt.Sprintf("This recipe is called %s. \n\nThe full list of ingredients is: %s, and "+
+		" the image is %s. The full recipe is available at %s",
+		rawRecipe["title"], rawRecipe["ingredients"], rawRecipe["thumbnail"], rawRecipe["href"])
 }
 
 func getJSONArray(res *http.Response, arrayString string) []map[string]interface{} {
