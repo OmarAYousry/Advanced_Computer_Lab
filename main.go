@@ -57,7 +57,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 
 	//checks for invalid characters in the user's message
 	if strings.ContainsAny(message,
-		`,.;()!@#$%^&*[]{}\\|:?><`) {
+		`;()!@#$%^&*[]{}\\|:?><`) {
 		return "", fmt.Errorf("Whoops! Please only enter valid answers to the question! No symbols or numbers!")
 	}
 
@@ -86,8 +86,11 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		}
 	} else if session["phase"][0] == "Querying" {
 		var items []string
+		// just in case the user entered decided to enter a period somewhere or something
+		strings.Trim(message, ".")
 		if strings.Contains(message, ",") && strings.Contains(message, " ") {
-			return "", fmt.Errorf("Please only separate your desired ingredients by commas OR spaces, NOT both.")
+			// assuming user enters something like "Pasta, onions, caramel"
+			strings.TrimSpace(message)
 		} else if strings.Contains(message, ",") {
 			items = strings.Split(message, ",")
 		} else {
