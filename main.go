@@ -22,7 +22,10 @@ var data []map[string]interface{}
 func getDetailsForRecipe(rawRecipe map[string]interface{}) string {
 	return fmt.Sprintf("This recipe is called %s. \n\nThe full list of ingredients is: %s, and "+
 		" the image is %s. The full recipe is available at %s",
-		rawRecipe["title"], rawRecipe["ingredients"], rawRecipe["thumbnail"], rawRecipe["href"])
+		rawRecipe["title"],
+		rawRecipe["ingredients"],
+		rawRecipe["thumbnail"],
+		rawRecipe["href"])
 }
 
 func getJSONArray(res *http.Response, arrayString string) []map[string]interface{} {
@@ -86,7 +89,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 			lastNumOfItems = len(session["history"])
 			session["phase"][0] = "APIing"
 		} else {
-			return "", fmt.Errorf("Don't think I quite got that. Please only enter yes or no.")
+			return "", fmt.Errorf("Don't think I quite got that. Please only enter yes or no. %d %d", lastNumOfItems, len(session["history"]))
 		}
 	} else if session["phase"][0] == "Querying" {
 		var items []string
