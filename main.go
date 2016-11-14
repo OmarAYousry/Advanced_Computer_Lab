@@ -63,43 +63,66 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 
 	if session["phase"] == nil {
 		session["name"] = strings.Split(message, " ")
-		session["phase"] = []string{"Number"}
+		session["phase"] = []string{"Querying"}
 		session["history"] = []string{}
-		return "Okay, " + session["name"][0] + ". How many ingredients would you like to specify for your dish?", nil
-	} else if session["phase"][0] == "Number" {
-		if len(message) > 1 || !(strings.ContainsAny(message, "123456789")) {
-			return "Please choose a number (digit) between 1 and 9 only.", nil
-		}
+		// return "Okay, " + session["name"][0] + ". How many ingredients would you like to specify for your dish?", nil
+		// } // else if session["phase"][0] == "Number" {
+		// 	if len(message) > 1 || !(strings.ContainsAny(message, "123456789")) {
+		// 		return "Please choose a number (digit) between 1 and 9 only.", nil
+		// 	}
 		session["phase"][0] = "Querying"
-		session["number"] = []string{message}
-		returnMsg = "Okay. What is the first ingredient you want?"
+		// session["number"] = []string{message}
+		// returnMsg = "Okay. What is the first ingredient you want?"
+		return "Okay, " + session["name"][0] +
+			". Please enter the ingredients you want to specify seperated by commas or spaces (not both)", nil
+	} else if session["phase"][0] == "Querying" && (strings.EqualFold(message, "No") || strings.EqualFold(message, "Yes")) {
+		if session["history"] == nil {
+			return "", fmt.Errorf("Whoops! You need to enter items first!")
+		} else if strings.EqualFold(message, "Yes") {
+			return "Okay, " + session["name"][0] + ". What would you like to add?", nil
+		} else {
+			// the answer is no
+			session["phase"][0] = "APIing"
+		}
 	} else if session["phase"][0] == "Querying" {
+		var items []string
+		if strings.Contains(message, ",") && strings.Contains(message, " ") {
+			return "", fmt.Errorf("Please only separate your desired ingredients by commas OR spaces, NOT both.")
+		} else if strings.Contains(message, ",") {
+			items = strings.Split(message, ",")
+		} else {
+			// default case, can also handle space separation
+			items = strings.Split(message, " ")
+		}
+
 		returnMsg = "You want "
-		numItems, _ := strconv.Atoi(session["number"][0])
-		numItems -= 1
-		session["number"][0] = strconv.Itoa(numItems)
-		session["history"] = append(session["history"], strings.Split(message, " ")[0])
-		for index, item := range session["history"] {
-			if index != len(session["history"])-1 {
+		// numItems, _ := strconv.Atoi(session["number"][0])
+		// numItems -= 1
+		// session["number"][0] = strconv.Itoa(numItems)
+		// session["history"] = append(session["history"], strings.Split(message, " ")[0])
+		numItems := len(items) + len(session["history"])
+		for index, item := range items {
+			session["history"] = append(session["history"], item)
+			if index != numItems-1 {
 				returnMsg += item
 				returnMsg += ", "
 			} else {
-				if len(session["history"]) != 1 {
+				if numItems != 1 {
 					returnMsg += "and "
 				}
 				returnMsg += item
-				returnMsg += "."
+				returnMsg += ". Do you want to add any more ingredients? (Yes/No)"
 			}
 		}
-		if numItems != 0 {
-			returnMsg += " What else?"
-		} else {
-			session["phase"][0] = "APIing"
-			returnMsg += " I will now show you the details of the first recipe I found....\n\n"
-		}
+		// if numItems != 0 {
+		// 	returnMsg += " What else?"
+		// } else {
+		// 	session["phase"][0] = "APIing"
+		// 	returnMsg += " I will now show you the details of the first recipe I found....\n\n"
+		// }
 	}
 	if session["phase"][0] == "APIing" {
-		data = getJSONArray(getResponse("http://www.recipepuppy.com/api", session["history"], ""), "results")
+		data = getJSONArray(getResponse("https://www.recipepuppy.com/api", session["history"], ""), "results")
 		if len(data) == 0 {
 			returnMsg += "Whoops! I don't seem to have found any recipe matching your entered items. \n Would you like to start over?"
 			session["phase"][0] = "Ending"
