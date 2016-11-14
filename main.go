@@ -95,12 +95,12 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 	} else if session["phase"][0] == "Querying" {
 		var items []string
 		// just in case the user entered decided to enter a period somewhere or something
-		message = strings.Trim(message, ".")
-		message = strings.Trim(message, "and")
-		message = strings.Trim(message, "&")
+		message = strings.Replace(message, ".", "", -1)
+		message = strings.Replace(message, "and", "", -1)
+		message = strings.Replace(message, "&", "", -1)
 		if strings.Contains(message, ",") && strings.Contains(message, " ") {
 			// assuming user enters something like "Pasta, onions, caramel"
-			message = strings.TrimSpace(message)
+			message = strings.Replace(message, " ", "", -1)
 		}
 		if strings.Contains(message, ",") {
 			items = strings.Split(message, ",")
