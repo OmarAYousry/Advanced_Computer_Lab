@@ -16,8 +16,8 @@ import (
 	"github.com/ramin0/chatbot"
 )
 
-var lastNumOfItems int = 0
-var data []map[string]interface{}
+// var lastNumOfItems int = 0
+// var data []map[string]interface{}
 
 func getDetailsForRecipe(rawRecipe map[string]interface{}) string {
 	return fmt.Sprintf("This recipe is called %s. \n\nThe full list of ingredients is: %s, and "+
@@ -71,6 +71,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		session["name"] = strings.Split(message, " ")
 		session["phase"] = []string{"Querying"}
 		session["history"] = []string{}
+		session["lastNumOfItems"] = []string{}
 		// return "Okay, " + session["name"][0] + ". How many ingredients would you like to specify for your dish?", nil
 		// } // else if session["phase"][0] == "Number" {
 		// 	if len(message) > 1 || !(strings.ContainsAny(message, "123456789")) {
@@ -81,15 +82,15 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		// returnMsg = "Okay. What is the first ingredient you want?"
 		return "Okay, " + session["name"][0] +
 			". Please enter the ingredients you want to specify seperated by commas or spaces", nil
-	} else if session["phase"][0] == "Querying" && lastNumOfItems != len(session["history"]) {
+	} else if session["phase"][0] == "Querying" && len(session["lastNumOfItems"]) != len(session["history"]) {
 		if strings.EqualFold(message, "Yes") || strings.EqualFold(message, "Y") || strings.EqualFold(message, "Yeah") {
-			lastNumOfItems = len(session["history"])
+			copy(session["lastNumOfItems"], session["history"])
 			return "Okay, " + session["name"][0] + ". What would you like to add?", nil
 		} else if strings.EqualFold(message, "No") || strings.EqualFold(message, "N") || strings.EqualFold(message, "Nope") {
-			lastNumOfItems = len(session["history"])
+			copy(session["lastNumOfItems"], session["history"])
 			session["phase"][0] = "APIing"
 		} else {
-			return "", fmt.Errorf("Don't think I quite got that. Please only enter yes or no. %d %d", lastNumOfItems, len(session["history"]))
+			return "", fmt.Errorf("Don't think I quite got that. Please only enter yes or no. %d %d", len(session["lastNumOfItems"]), len(session["history"]))
 		}
 	} else if session["phase"][0] == "Querying" {
 		var items []string
@@ -136,7 +137,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		// }
 	}
 	if session["phase"][0] == "APIing" {
-		data = getJSONArray(getResponse("http://www.recipepuppy.com/api", session["history"], ""), "results")
+		data := getJSONArray(getResponse("http://www.recipepuppy.com/api", session["history"], ""), "results")
 		if len(data) == 0 {
 			returnMsg += "Whoops! I don't seem to have found any recipe matching your entered items. \n Would you like to start over?"
 			session["phase"][0] = "Ending"
@@ -172,11 +173,17 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 			} else {
 				currentItem += 1
 				session["results"][1] = strconv.Itoa(currentItem)
+				data := getJSONArray(getResponse("http://www.recipepuppy.com/api", session["history"], ""), "results")
 				return getDetailsForRecipe(data[currentItem]), nil
 			}
-		} else {
+		} else if strings.EqualFold(message, "stop") || strings.EqualFold(message, "bye") {
 			session["phase"][0] = "Shutdown"
 			return "I take it that will be all. Goodbye!", nil
+		} else if strings.EqualFold(message, "restart") || strings.EqualFold(message, "redo") {
+			session["phase"] = nil
+			return "Okay, let's go again!", nil
+		} else {
+			return "", fmt.Errorf("Sorry, I didn't quite catch that. Please say next to get more recipes, or stop to end this interaction, or restart to start over")
 		}
 	}
 	if session["phase"][0] == "Shutdown" {
