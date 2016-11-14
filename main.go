@@ -77,10 +77,10 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		return "Okay, " + session["name"][0] +
 			". Please enter the ingredients you want to specify seperated by commas or spaces", nil
 	} else if session["phase"][0] == "Querying" && lastNumOfItems != len(session["history"]) {
-		if strings.EqualFold(message, "Yes") && strings.EqualFold(message, "Y") && strings.EqualFold(message, "Yeah") {
+		if strings.EqualFold(message, "Yes") || strings.EqualFold(message, "Y") || strings.EqualFold(message, "Yeah") {
 			lastNumOfItems = len(session["history"])
 			return "Okay, " + session["name"][0] + ". What would you like to add?", nil
-		} else if strings.EqualFold(message, "No") && strings.EqualFold(message, "N") && strings.EqualFold(message, "Nope") {
+		} else if strings.EqualFold(message, "No") || strings.EqualFold(message, "N") || strings.EqualFold(message, "Nope") {
 			lastNumOfItems = len(session["history"])
 			session["phase"][0] = "APIing"
 		} else {
