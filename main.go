@@ -97,6 +97,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		// just in case the user entered decided to enter a period somewhere or something
 		strings.Trim(message, ".")
 		strings.Trim(message, "and")
+		strings.Trim(message, "&")
 		if strings.Contains(message, ",") && strings.Contains(message, " ") {
 			// assuming user enters something like "Pasta, onions, caramel"
 			strings.TrimSpace(message)
