@@ -74,7 +74,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		// session["number"] = []string{message}
 		// returnMsg = "Okay. What is the first ingredient you want?"
 		return "Okay, " + session["name"][0] +
-			". Please enter the ingredients you want to specify seperated by commas or spaces (not both)", nil
+			". Please enter the ingredients you want to specify seperated by commas or spaces", nil
 	} else if session["phase"][0] == "Querying" && (strings.EqualFold(message, "No") || strings.EqualFold(message, "Yes")) {
 		if session["history"] == nil {
 			return "", fmt.Errorf("Whoops! You need to enter items first!")
@@ -103,14 +103,16 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		// numItems -= 1
 		// session["number"][0] = strconv.Itoa(numItems)
 		// session["history"] = append(session["history"], strings.Split(message, " ")[0])
-		numItems := len(items) + len(session["history"])
-		for index, item := range items {
+		// numItems := len(items) + len(session["history"])
+		for _, item := range items {
 			session["history"] = append(session["history"], item)
-			if index != numItems-1 {
+		}
+		for index, item := range items {
+			if index != len(session["history"])-1 {
 				returnMsg += item
 				returnMsg += ", "
 			} else {
-				if numItems != 1 {
+				if len(session["history"]) != 1 {
 					returnMsg += "and "
 				}
 				returnMsg += item
