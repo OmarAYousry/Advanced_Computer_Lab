@@ -95,12 +95,12 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 	} else if session["phase"][0] == "Querying" {
 		var items []string
 		// just in case the user entered decided to enter a period somewhere or something
-		strings.Trim(message, ".")
-		strings.Trim(message, "and")
-		strings.Trim(message, "&")
+		message = strings.Trim(message, ".")
+		message = strings.Trim(message, "and")
+		message = strings.Trim(message, "&")
 		if strings.Contains(message, ",") && strings.Contains(message, " ") {
 			// assuming user enters something like "Pasta, onions, caramel"
-			strings.TrimSpace(message)
+			message = strings.TrimSpace(message)
 		}
 		if strings.Contains(message, ",") {
 			items = strings.Split(message, ",")
@@ -145,8 +145,8 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 			session["results"] = []string{strconv.Itoa(len(data)), "1"}
 		}
 
-		// return returnMsg, nil
-		return strings.Join(session["history"], ","), nil
+		return returnMsg, nil
+		// return strings.Join(session["history"], ","), nil
 
 	}
 	if session["phase"][0] == "Ending" {
@@ -170,9 +170,9 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 			} else {
 				currentItem += 1
 				session["results"][1] = strconv.Itoa(currentItem)
-				// data := getJSONArray(getResponse("http://www.recipepuppy.com/api", session["history"], ""), "results")
-				// return getDetailsForRecipe(data[currentItem]), nil
-				return strings.Join(session["history"], ","), nil
+				data := getJSONArray(getResponse("http://www.recipepuppy.com/api", session["history"], ""), "results")
+				return getDetailsForRecipe(data[currentItem]), nil
+				// return strings.Join(session["history"], ","), nil
 			}
 		} else if strings.EqualFold(message, "stop") || strings.EqualFold(message, "bye") {
 			session["phase"][0] = "Shutdown"
