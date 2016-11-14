@@ -98,6 +98,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		message = strings.Replace(message, ".", "", -1)
 		message = strings.Replace(message, "and", "", -1)
 		message = strings.Replace(message, "&", "", -1)
+		message = strings.Replace(message, "  ", " ", -1)
 		if strings.Contains(message, ",") && strings.Contains(message, " ") {
 			// assuming user enters something like "Pasta, onions, caramel"
 			message = strings.Replace(message, " ", "", -1)
@@ -145,7 +146,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 			session["results"] = []string{strconv.Itoa(len(data)), "1"}
 		}
 
-		return returnMsg, nil
+		return returnMsg + ". Please say 'next' to get more recipes, 'stop' to terminate this session, or 'restart' to start over. ", nil
 		// return strings.Join(session["history"], ","), nil
 
 	}
@@ -153,7 +154,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		if session["phase"][1] == "Failure" || session["phase"][1] == "Complete" {
 			if strings.EqualFold(message, "yes") || strings.EqualFold(message, "restart") || strings.EqualFold(message, "retry") {
 				session["phase"] = nil
-				return "Restarting...\n\n\n", nil
+				return "A WHOLE NEW WORLD! Sorry, what was your name again?n\n\n", nil
 			} else if strings.EqualFold(message, "no") || strings.EqualFold(message, "bye") || strings.EqualFold(message, "goodbye") {
 				session["phase"][0] = "Shutdown"
 				return "Understood, thank you for using this service. Have a lovely day!", nil
@@ -171,7 +172,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 				currentItem += 1
 				session["results"][1] = strconv.Itoa(currentItem)
 				data := getJSONArray(getResponse("http://www.recipepuppy.com/api", session["history"], ""), "results")
-				return getDetailsForRecipe(data[currentItem]), nil
+				return getDetailsForRecipe(data[currentItem]) + ". Please say 'next' to get more recipes, 'stop' to end this interaction, or 'restart' to start over", nil
 				// return strings.Join(session["history"], ","), nil
 			}
 		} else if strings.EqualFold(message, "stop") || strings.EqualFold(message, "bye") {
@@ -179,9 +180,9 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 			return "I take it that will be all. Goodbye!", nil
 		} else if strings.EqualFold(message, "restart") || strings.EqualFold(message, "redo") {
 			session["phase"] = nil
-			return "Okay, let's go again!", nil
+			return "A WHOLE NEW WORLD! Sorry, what was your name again?\n\n\n", nil
 		} else {
-			return "", fmt.Errorf("Sorry, I didn't quite catch that. Please say next to get more recipes, or stop to end this interaction, or restart to start over")
+			return "", fmt.Errorf("Sorry, I didn't quite catch that. Please say 'next' to get more recipes, 'stop' to end this interaction, or 'restart' to start over")
 		}
 	}
 	if session["phase"][0] == "Shutdown" {
