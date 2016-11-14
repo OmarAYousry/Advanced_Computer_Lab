@@ -137,7 +137,8 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 			returnMsg += "Whoops! I don't seem to have found any recipe matching your entered items. \n Would you like to start over?"
 			session["phase"][0] = "Ending"
 			session["phase"] = append(session["phase"], "Failure")
-			return returnMsg, nil
+			// return returnMsg, nil
+			return "\"" + strings.Join(session["history"], ",") + "\"", nil
 		} else {
 			session["phase"][0] = "Ending"
 			session["phase"] = append(session["phase"], "Success")
