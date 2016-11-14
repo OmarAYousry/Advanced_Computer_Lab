@@ -138,7 +138,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 			session["phase"][0] = "Ending"
 			session["phase"] = append(session["phase"], "Failure")
 			// return returnMsg, nil
-			return "\"" + strings.Join(session["history"], ",") + "\"", nil
+			return "\"" + strconv.Itoa(len(session["history"])) + "\"", nil
 		} else {
 			session["phase"][0] = "Ending"
 			session["phase"] = append(session["phase"], "Success")
