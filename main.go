@@ -13,7 +13,7 @@ import (
 
 	// Autoload environment variables in .env
 	_ "github.com/joho/godotenv/autoload"
-	"github.com/omarayousry/chatbot"
+	"github.com/ramin0/chatbot"
 )
 
 var data []map[string]interface{}
@@ -78,7 +78,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		numItems, _ := strconv.Atoi(session["number"][0])
 		numItems -= 1
 		session["number"][0] = strconv.Itoa(numItems)
-		session["history"] = append(session["history"], message)
+		session["history"] = append(session["history"], strings.Split(message, " ")[0])
 		for index, item := range session["history"] {
 			if index != len(session["history"])-1 {
 				returnMsg += item
