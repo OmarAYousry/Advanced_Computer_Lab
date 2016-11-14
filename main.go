@@ -84,10 +84,10 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 			". Please enter the ingredients you want to specify seperated by commas or spaces", nil
 	} else if session["phase"][0] == "Querying" && len(session["lastNumOfItems"]) != len(session["history"]) {
 		if strings.EqualFold(message, "Yes") || strings.EqualFold(message, "Y") || strings.EqualFold(message, "Yeah") {
-			copy(session["lastNumOfItems"], session["history"])
+			session["history"] = make([]string, len(session["history"]))
 			return "Okay, " + session["name"][0] + ". What would you like to add?", nil
 		} else if strings.EqualFold(message, "No") || strings.EqualFold(message, "N") || strings.EqualFold(message, "Nope") {
-			copy(session["lastNumOfItems"], session["history"])
+			session["history"] = make([]string, len(session["history"]))
 			session["phase"][0] = "APIing"
 		} else {
 			return "", fmt.Errorf("Don't think I quite got that. Please only enter yes or no. %d %d", len(session["lastNumOfItems"]), len(session["history"]))
@@ -130,12 +130,6 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 				returnMsg += ". Do you want to add any more ingredients? (Yes/No)"
 			}
 		}
-		// if numItems != 0 {
-		// 	returnMsg += " What else?"
-		// } else {
-		// 	session["phase"][0] = "APIing"
-		// 	returnMsg += " I will now show you the details of the first recipe I found....\n\n"
-		// }
 	}
 	if session["phase"][0] == "APIing" {
 		data := getJSONArray(getResponse("http://www.recipepuppy.com/api", session["history"], ""), "results")
