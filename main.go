@@ -107,7 +107,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		for _, item := range items {
 			session["history"] = append(session["history"], item)
 		}
-		for index, item := range items {
+		for index, item := range session["history"] {
 			if index != len(session["history"])-1 {
 				returnMsg += item
 				returnMsg += ", "
