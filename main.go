@@ -145,7 +145,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 			returnMsg += getDetailsForRecipe(data[0])
 			session["results"] = []string{strconv.Itoa(len(data)), "1"}
 		}
-		return "\"" + strings.Join(session["history"], ",") + "\"", nil
+		return "\"" + strings.Join(session["history"], ",") + "\"" + "\"" + strconv.Itoa(len(session["history"])) + "\"", nil
 
 		// return returnMsg, nil
 	}
