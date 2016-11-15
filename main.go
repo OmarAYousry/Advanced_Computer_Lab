@@ -20,11 +20,11 @@ import (
 // var data []map[string]interface{}
 
 func getDetailsForRecipe(rawRecipe map[string]interface{}) string {
-	return fmt.Sprintf("<img src=\"%s\"><br/>This recipe is called %s. <br/> The full list of ingredients is: %s, and "+
-		" the image is . The full recipe is available at %s",
+	return fmt.Sprintf("<img src=\"%s\"><br/>This recipe is called %s. <br/> The full list of ingredients is: %s.<br/>"+
+		"The full recipe is available <a href=%s>here</a>.",
+		rawRecipe["thumbnail"],
 		rawRecipe["title"],
 		rawRecipe["ingredients"],
-		rawRecipe["thumbnail"],
 		rawRecipe["href"])
 }
 
@@ -90,7 +90,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 			session["lastNumOfItems"] = make([]string, len(session["history"]))
 			session["phase"][0] = "APIing"
 		} else {
-			return "", fmt.Errorf("Don't think I quite got that. Please only enter yes or no. %d %d", len(session["lastNumOfItems"]), len(session["history"]))
+			return "", fmt.Errorf("Don't think I quite got that. Please only enter yes or no.")
 		}
 	} else if session["phase"][0] == "Querying" {
 		var items []string
