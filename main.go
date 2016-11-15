@@ -21,7 +21,7 @@ import (
 
 func getDetailsForRecipe(rawRecipe map[string]interface{}) string {
 	return fmt.Sprintf("This recipe is called %s. \n\nThe full list of ingredients is: %s, and "+
-		" the image is %s. The full recipe is available at %s",
+		" the image is <img src=\"%s\">. The full recipe is available at %s",
 		rawRecipe["title"],
 		rawRecipe["ingredients"],
 		rawRecipe["thumbnail"],
@@ -164,9 +164,9 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		if strings.EqualFold(message, "more") || strings.EqualFold(message, "next") {
 			numResults, _ := strconv.Atoi(session["results"][0])
 			currentItem, _ := strconv.Atoi(session["results"][1])
-			if numResults == currentItem {
+			if numResults == currentItem+1 {
 				session["phase"][1] = "Complete"
-				return "I've already listed everything. Thanks!", nil
+				return "I've already listed everything. Thanks! Please say yes or restart if you want to restart, or no otherwise", nil
 			} else {
 				currentItem += 1
 				session["results"][1] = strconv.Itoa(currentItem)
