@@ -20,8 +20,8 @@ import (
 // var data []map[string]interface{}
 
 func getDetailsForRecipe(rawRecipe map[string]interface{}) string {
-	return fmt.Sprintf("This recipe is called %s. \n\nThe full list of ingredients is: %s, and "+
-		" the image is <img src=\"%s\">. The full recipe is available at %s",
+	return fmt.Sprintf("<img src=\"%s\"><br/>This recipe is called %s. <br/> The full list of ingredients is: %s, and "+
+		" the image is . The full recipe is available at %s",
 		rawRecipe["title"],
 		rawRecipe["ingredients"],
 		rawRecipe["thumbnail"],
