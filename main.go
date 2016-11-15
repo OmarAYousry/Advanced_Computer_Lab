@@ -154,7 +154,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 		if session["phase"][1] == "Failure" || session["phase"][1] == "Complete" {
 			if strings.EqualFold(message, "yes") || strings.EqualFold(message, "restart") || strings.EqualFold(message, "retry") {
 				session["phase"] = nil
-				return "A WHOLE NEW WORLD! Sorry, what was your name again?n\n\n", nil
+				return "A WHOLE NEW WORLD! Sorry, what was your name again?", nil
 			} else if strings.EqualFold(message, "no") || strings.EqualFold(message, "bye") || strings.EqualFold(message, "goodbye") {
 				session["phase"][0] = "Shutdown"
 				return "Understood, thank you for using this service. Have a lovely day!", nil
@@ -180,7 +180,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 			return "I take it that will be all. Goodbye!", nil
 		} else if strings.EqualFold(message, "restart") || strings.EqualFold(message, "redo") {
 			session["phase"] = nil
-			return "A WHOLE NEW WORLD! Sorry, what was your name again?\n\n\n", nil
+			return "A WHOLE NEW WORLD! Sorry, what was your name again?", nil
 		} else {
 			return "", fmt.Errorf("Sorry, I didn't quite catch that. Please say 'next' to get more recipes, 'stop' to end this interaction, or 'restart' to start over")
 		}
