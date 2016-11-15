@@ -21,7 +21,7 @@ import (
 
 func getDetailsForRecipe(rawRecipe map[string]interface{}) string {
 	return fmt.Sprintf("<img src=\"%s\"><br/>This recipe is called %s. <br/> The full list of ingredients is: %s.<br/>"+
-		"The full recipe is available <a href=\"%s\" target=\"_blank\">here</a>.<br/><br/>",
+		"The full recipe is available <a href=\"%s\" target=\"_blank\">here</a>.<br/>",
 		rawRecipe["thumbnail"],
 		rawRecipe["title"],
 		rawRecipe["ingredients"],
@@ -146,7 +146,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 			session["results"] = []string{strconv.Itoa(len(data)), "1"}
 		}
 
-		return returnMsg + ". Please say 'next' to get more recipes, 'stop' to terminate this session, or 'restart' to start over. ", nil
+		return returnMsg + "Please say 'next' to get more recipes, 'stop' to terminate this session, or 'restart' to start over. ", nil
 		// return strings.Join(session["history"], ","), nil
 
 	}
@@ -172,7 +172,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 				currentItem += 1
 				session["results"][1] = strconv.Itoa(currentItem)
 				data := getJSONArray(getResponse("http://www.recipepuppy.com/api", session["history"], ""), "results")
-				return getDetailsForRecipe(data[currentItem]) + ". Please say 'next' to get more recipes, 'stop' to end this interaction, or 'restart' to start over", nil
+				return getDetailsForRecipe(data[currentItem]) + "Please say 'next' to get more recipes, 'stop' to end this interaction, or 'restart' to start over", nil
 				// return strings.Join(session["history"], ","), nil
 			}
 		} else if strings.EqualFold(message, "stop") || strings.EqualFold(message, "bye") {
