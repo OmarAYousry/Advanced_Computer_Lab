@@ -21,7 +21,7 @@ import (
 
 func getDetailsForRecipe(rawRecipe map[string]interface{}) string {
 	return fmt.Sprintf("<img src=\"%s\"><br/>This recipe is called %s. <br/> The full list of ingredients is: %s.<br/>"+
-		"The full recipe is available <a href=%s>here</a>.",
+		"The full recipe is available <a href=\"%s\" target=\"_blank\">here</a>.",
 		rawRecipe["thumbnail"],
 		rawRecipe["title"],
 		rawRecipe["ingredients"],
