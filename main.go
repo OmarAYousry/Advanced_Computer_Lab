@@ -20,8 +20,8 @@ import (
 // var data []map[string]interface{}
 
 func getDetailsForRecipe(rawRecipe map[string]interface{}) string {
-	rawRecipe["title"] = strings.Replace([string]rawRecipe["title"], "\t", "", -1)
-	rawRecipe["title"] = strings.Replace([string]rawRecipe["title"], "\n", "", -1)					       
+	rawRecipe["title"] = strings.Replace((rawRecipe["title"]).(string), "\t", "", -1)
+	rawRecipe["title"] = strings.Replace((rawRecipe["title"]).(string), "\n", "", -1)
 	return fmt.Sprintf("The image is located here: %s\nThis recipe is called %s.\nThe full list of ingredients is: %s.\n"+
 		"The full recipe is available at %s",
 		rawRecipe["thumbnail"],
@@ -218,11 +218,7 @@ func chatbotProcess(session chatbot.Session, message string) (string, error) {
 
 func main() {
 	// Uncomment the following lines to customize the chatbot
-	chatbot.WelcomeMessage = `Hello. I am the GUC Sofra AI.
-I will help you in determining the best
-recipes based on the nutritional values you want
-by asking you a series of questions.
-First off, could you tell me what your name is please?`
+	chatbot.WelcomeMessage = `Hello. I am the GUC Sofra AI. I will help you in determining the best recipes based on the nutritional values you want by asking you a series of questions. First off, could you tell me what your name is please?`
 	chatbot.ProcessFunc(chatbotProcess)
 
 	// Use the PORT environment variable
