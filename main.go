@@ -22,8 +22,8 @@ import (
 func getDetailsForRecipe(rawRecipe map[string]interface{}) string {
 	rawRecipe["title"] = strings.Replace((rawRecipe["title"]).(string), "\t", "", -1)
 	rawRecipe["title"] = strings.Replace((rawRecipe["title"]).(string), "\n", "", -1)
-	return fmt.Sprintf("The image is located here: %s\nThis recipe is called %s.\nThe full list of ingredients is: %s.\n"+
-		"The full recipe is available at %s",
+	return fmt.Sprintf("The image is located here: %s\nThis recipe is called %s\nThe full list of ingredients is: %s.\n"+
+		"The full recipe is available at %s\n",
 		rawRecipe["thumbnail"],
 		rawRecipe["title"],
 		rawRecipe["ingredients"],
