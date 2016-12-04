@@ -20,7 +20,7 @@ import (
 // var data []map[string]interface{}
 
 func getDetailsForRecipe(rawRecipe map[string]interface{}) string {
-	rawRecuipe["title"] = strings.split(rawRecipe["title"], "\\")[0]
+	rawRecuipe["title"] = strings.Split(rawRecipe["title"], "\\")[0]
 	return fmt.Sprintf("The image is located here: %s\nThis recipe is called %s.\nThe full list of ingredients is: %s.\n"+
 		"The full recipe is available at %s",
 		rawRecipe["thumbnail"],
